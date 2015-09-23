@@ -1,10 +1,10 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'Valloric/YouCompleteMe'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'majutsushi/tagbar'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'Valloric/YouCompleteMe'
 Plug 'jiangmiao/auto-pairs'
 Plug 'bling/vim-airline'
 Plug 'Lokaltog/vim-easymotion'
