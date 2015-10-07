@@ -18,6 +18,8 @@ setopt hist_reduce_blanks       # trim blanks
 setopt inc_append_history       # add commands as they are typed, don't wait until shell exit 
 setopt share_history            # share hist between sessions
 setopt hist_verify
+setopt auto_param_slash
+setopt complete_in_word
 
 ##
 ## Vcs info
