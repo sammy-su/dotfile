@@ -1,5 +1,6 @@
 alias ls="ls --color"
 alias ll="ls -l"
+alias lh="ls -lh"
 alias la="ls -A"
 alias topu="top -u ${USER}"
 alias dud="du -hd"

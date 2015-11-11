@@ -27,6 +27,7 @@ let g:UltiSnipsExpandTrigger="<c-j>"
 " Close definition preview of YCM
 autocmd CompleteDone * pclose
 let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/ycm_extra_conf.py'
+let g:ycm_register_as_syntastic_checker = 0 
 
 " YankRing key mapping
 let g:yankring_replace_n_pkey = '<s-p>'
