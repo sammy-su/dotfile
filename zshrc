@@ -2,8 +2,36 @@ alias ls="ls --color"
 alias ll="ls -l"
 alias lh="ls -lh"
 alias la="ls -A"
-alias topu="top -u ${USER}"
+alias topu="top -u ${USER} -c"
 alias dud="du -hd"
+alias psu="pstree -u ${USER}"
+alias py_kill="pstreeu -p | grep ^python | awk -F'---' '{print \$1}' | sed 's/[^0-9]//g' | xargs -i kill {}"
+alias cdw="cd ${WORK}"
+alias cdd="cd ${DATA}"
+alias cdv="cd ${VISION}"
+
+function sshcd() {
+    ssh -x -t -t $1 "cd ${PWD}; zsh -l";
+}
+
+function condor_statistics () {
+    if [[ $1 == 'GPU' ]]; then
+        condor_status -constraint GPU | tail -n 5
+    else
+        condor_status -constraint InMastodon | tail -n 5
+    fi
+}
+function condor_jobs () {
+    if [[ $1 == 'jobs' ]]; then
+        condor_q -submitter ycsu | grep held | awk '{print $1}' | paste -s -d"+" | bc;
+    elif [[ $1 == 'list' ]]; then
+        condor_q -submitter ycsu | grep held;
+    elif [[ $1 == 'submitter' ]]; then
+        condor_q -submitter ycsu | grep 'held\|Submitter';
+    else
+        condor_q -submitter ycsu | grep held | awk '{print $9}' | paste -s -d"+" | bc;
+    fi
+}
 
 export TERM='xterm-256color'
 
@@ -17,10 +45,32 @@ setopt append_history           # append
 setopt hist_ignore_all_dups     # no duplicate
 setopt hist_reduce_blanks       # trim blanks
 setopt inc_append_history       # add commands as they are typed, don't wait until shell exit 
-setopt share_history            # share hist between sessions
+#setopt share_history            # share hist between sessions
 setopt hist_verify
 setopt auto_param_slash
 setopt complete_in_word
+
+##
+## Remember old directories
+###
+DIRSTACKFILE="$HOME/.cache/zsh/dirs"
+if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
+  dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+  [[ -d $dirstack[1] ]] && cd $dirstack[1]
+fi
+chpwd() {
+  print -l $PWD ${(u)dirstack} >$DIRSTACKFILE
+}
+
+DIRSTACKSIZE=16
+
+setopt AUTO_PUSHD PUSHD_SILENT PUSHD_TO_HOME
+
+## Remove duplicate entries
+setopt PUSHD_IGNORE_DUPS
+
+## This reverts the +/- operators.
+setopt PUSHD_MINUS 
 
 ##
 ## Vcs info
@@ -106,3 +156,5 @@ function zle-line-finish () {
 }
 zle -N zle-line-init
 zle -N zle-line-finish  
+
+

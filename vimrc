@@ -51,7 +51,7 @@ set autoindent
 
 " Customize
 set incsearch
-set cursorline
+" set cursorline
 set nu
 set ignorecase
 set smartcase
