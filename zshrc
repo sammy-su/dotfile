@@ -2,13 +2,15 @@ alias ls="ls --color"
 alias ll="ls -l"
 alias lh="ls -lh"
 alias la="ls -A"
+alias lf="ls --color=none | xargs -i sh -c \"echo -n '{}\t'; ls {} | wc -l\""
 alias topu="top -u ${USER} -c"
 alias dud="du -hd"
 alias psu="pstree -u ${USER}"
-alias py_kill="pstreeu -p | grep ^python | awk -F'---' '{print \$1}' | sed 's/[^0-9]//g' | xargs -i kill {}"
+alias py_kill="psu -p | grep ^python | awk -F'---' '{print \$1}' | sed 's/[^0-9]//g' | xargs -i kill {}"
 alias cdw="cd ${WORK}"
 alias cdd="cd ${DATA}"
 alias cdv="cd ${VISION}"
+alias cdt="cd ${USER_TMP}"
 
 function sshcd() {
     ssh -x -t -t $1 "cd ${PWD}; zsh -l";
@@ -50,19 +52,15 @@ setopt hist_verify
 setopt auto_param_slash
 setopt complete_in_word
 
-##
-## Remember old directories
-###
 DIRSTACKFILE="$HOME/.cache/zsh/dirs"
 if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
-  dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
-  [[ -d $dirstack[1] ]] && cd $dirstack[1]
+    dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
 fi
 chpwd() {
   print -l $PWD ${(u)dirstack} >$DIRSTACKFILE
 }
 
-DIRSTACKSIZE=16
+DIRSTACKSIZE=32
 
 setopt AUTO_PUSHD PUSHD_SILENT PUSHD_TO_HOME
 
@@ -70,7 +68,7 @@ setopt AUTO_PUSHD PUSHD_SILENT PUSHD_TO_HOME
 setopt PUSHD_IGNORE_DUPS
 
 ## This reverts the +/- operators.
-setopt PUSHD_MINUS 
+setopt PUSHD_MINUS
 
 ##
 ## Vcs info
@@ -126,6 +124,7 @@ key[Left]=${terminfo[kcub1]}
 key[Right]=${terminfo[kcuf1]}
 key[PageUp]=${terminfo[kpp]}
 key[PageDown]=${terminfo[knp]}
+key[Enter]=${terminfo[kent]}
 
 # sometimes the mapping is incorrect
 # manually set the key
@@ -157,4 +156,27 @@ function zle-line-finish () {
 zle -N zle-line-init
 zle -N zle-line-finish  
 
+##
+# zplug
+###
+source ~/.zplug/init.zsh
 
+zplug "hlissner/zsh-autopair", defer:2
+zplug "willghatch/zsh-cdr"
+zplug "zsh-users/zaw"
+
+zplug load
+
+bindkey '^R' zaw-history
+bindkey -M filterselect '^J' down-line-or-history
+bindkey -M filterselect '^K' up-line-or-history
+
+zstyle ':filter-select:highlight' matched fg=red
+zstyle ':filter-select' max-lines 20 # use 10 lines for filter-select
+zstyle ':filter-select' rotate-list yes # enable rotation for filter-select
+zstyle ':filter-select' case-insensitive yes # enable case-insensitive search
+zstyle ':filter-select' extended-search yes # see below
+zstyle ':filter-select' hist-find-no-dups yes # ignore duplicates in history source
+
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
